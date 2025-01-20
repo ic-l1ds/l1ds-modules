@@ -1,0 +1,5 @@
+<use name="root"/>
+<use name="ROOTVecOps" />
+<use name="xgboost"/>
+<use name="Base/Modules"/>
+<export><lib name="1"/></export>
