@@ -45,7 +45,6 @@ class QCDWeightProducer(JetLepMetSyst):
                     bool pass_mu = false;
                     std::vector<float> puPtHats;
                     for (int i = 0; i < PileupPtHats.size(); i++){
-                        if (PileupPtHats[i] <= 0.0) continue;
                         puPtHats.push_back(PileupPtHats[i]);
                     }
                     std::sort (puPtHats.begin(), puPtHats.end(), std::greater<float>());

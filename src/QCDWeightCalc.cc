@@ -104,17 +104,6 @@ float QCDWeightCalc::weight(float genPtHat,const std::vector<float>& puPtHats,bo
     const float totCount = puPtHats.size()+1;//+1 for the genPtHat
     float expectEventsMC = 0;
 
-    // DEBUG
-    //float expectEventsMCunweighted = 0;
-    //std::cout << "Number of bins (excluding overflow):  " << bins_.size() << std::endl;
-    //std::cout << "Counts in each bin: "; 
-    //for (size_t i = 0; i < binCounts.size(); i++) {
-    //    std::cout << binCounts[i] << " ";
-    //}
-    //std::cout << std::endl;
-    //std::cout << "Total count: " << totCount << std::endl;
-    // END DEBUG
-
     for(size_t binNr=0;binNr<bins_.size();binNr++){
         
         float binFrac = binCounts[binNr]/totCount;
@@ -122,22 +111,15 @@ float QCDWeightCalc::weight(float genPtHat,const std::vector<float>& puPtHats,bo
         //dont correct inclusively generated sample
         float probCorr = binNr!=0 ? binFrac / theoryFrac : 1.;
         expectEventsMC += bins_[binNr].nrIncl * probCorr;
-
-        // DEBUG
-        //expectEventsMCunweighted += bins_[binNr].nrIncl;
-        //std::cout << "binNr: " << binNr << " binFrac: " << binFrac << " theoryFrac: " << theoryFrac << " probCorr: " << probCorr << " expectEventsMC from bin: " << (bins_[binNr].nrIncl * probCorr) << " expectEventsMC from bin (unweighted): " << (bins_[binNr].nrIncl)  << std::endl;
-        // END DEBUG
     }
 
-    // DEBUG
-    //std::cout << "expectEventsMC: " << expectEventsMC << " expectEventsMC (unweighted): " << expectEventsMCunweighted << std::endl;
-    // END DEBUG
     float weight = bxFreq_ / expectEventsMC;
     if(passEm || passMu){
         weight *= filtWeight(genPtHat,passEm,passMu);
     }
 
-    // DEBUG (for 1.0499789 case)
+    // DEBUG (for 1.0499789 case in the 15to20 bin)
+    /*
     if (weight > 0.25){
       std::cout << "DEBUGGING QCDWeightCalc::weight" << std::endl;
       std::cout << "genPtHat: " << genPtHat << std::endl;
@@ -146,9 +128,16 @@ float QCDWeightCalc::weight(float genPtHat,const std::vector<float>& puPtHats,bo
           std::cout << ptHat << " ";
       }
       std::cout << std::endl;
+      std::cout << "binCounts with total count " << totCount << " : ";
+      for (const auto& count : binCounts) {
+          std::cout << count << " ";
+      }
+      std::cout << std::endl;
+      std::cout << "Expected events MC: " << expectEventsMC << std::endl;
       std::cout << "Resulting weight: " << weight << std::endl;
       std::cout << std::endl;
     }
+    */
     return weight;  
 }
 
