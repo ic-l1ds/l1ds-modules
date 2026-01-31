@@ -86,9 +86,19 @@ size_t QCDWeightCalc::getBinNr(float ptHat)const
     //also note the minbias bin has an 0 - 9999 pt range we have to take into account it 
     //overlaps the other bins, more reason to treat it as special
     for(size_t binNr=1;binNr<bins_.size();binNr++){
+        // Interval is [) -> binning a
         if(ptHat<bins_[binNr].minPt) return binNr-1;
         else if(ptHat<bins_[binNr].maxPt) return binNr;
+
+        // Interval is (] -> binning b
+        //if(ptHat<=bins_[binNr].minPt) return binNr-1;
+        //else if(ptHat<=bins_[binNr].maxPt) return binNr;
+
+        // Interval is [] -> binning c
+        //if(ptHat<bins_[binNr].minPt) return binNr-1;
+        //else if(ptHat<=bins_[binNr].maxPt) return binNr;
     }  
+    if (!bins_.empty() && ptHat == bins_.back().maxPt) return bins_.size() - 1;
     //not in a QCD binned sample, return 0 for minbias
     return 0;
 }
@@ -120,7 +130,7 @@ float QCDWeightCalc::weight(float genPtHat,const std::vector<float>& puPtHats,bo
 
     // DEBUG (for 1.0499789 case in the 15to20 bin)
     /*
-    if (weight > 0.25){
+    if (weight > 20E-9){
       std::cout << "DEBUGGING QCDWeightCalc::weight" << std::endl;
       std::cout << "genPtHat: " << genPtHat << std::endl;
       std::cout << "Pileup ptHats: ";

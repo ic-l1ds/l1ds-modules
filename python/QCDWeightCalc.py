@@ -63,7 +63,7 @@ class QCDWeightProducer(JetLepMetSyst):
 
         df = df.Define(
             "qcd_weight", f"""get_qcd_weight_{self.json}(
-                genPtHat, PileupPtHats
+                GenPtHat_hardPtHat, PileupPtHat_puPtHats
             )"""
         )
 
