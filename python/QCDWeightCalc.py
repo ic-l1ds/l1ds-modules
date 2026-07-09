@@ -8,15 +8,15 @@ ROOT = import_root()
 
 class QCDWeightProducer(JetLepMetSyst):
     def __init__(self, *args, **kwargs):
-        default_name = "qcd_weight"
+        super(QCDWeightProducer, self).__init__(*args, **kwargs)
 
+        default_name = "qcd_weight"
         default_json_path = os.path.expandvars("$CMSSW_BASE/src/L1DS/Modules/data/qcd_with_weights.json")
 
         self.json_path = kwargs.pop("json_path", default_json_path)
         self.json = self.json_path.replace("/", "_").replace(".", "_")
         self.weight_name = kwargs.pop("weight_name", default_name)
-
-        super(QCDWeightProducer, self).__init__(*args, **kwargs)
+        self.isMC = kwargs.pop("isMC")
 
         base = "{}/{}/src/L1DS/Modules".format(
             os.getenv("CMT_CMSSW_BASE"), os.getenv("CMT_CMSSW_VERSION"))
@@ -60,17 +60,19 @@ class QCDWeightProducer(JetLepMetSyst):
 
     def run(self, df):
         #s = randomize("qcd_weight")
-
-        df = df.Define(
-            "qcd_weight", f"""get_qcd_weight_{self.json}(
-                GenPtHat_hardPtHat, PileupPtHat_puPtHats
-            )"""
-        )
-
-        #df = df.Define(
-        #    "qcd_weight",
-        #    "1.0"
-        #)
+        if self.isMC:
+            print(f"\nApplying pileup overlap corrected for MC assuming QCD as qcd_weight")
+            df = df.Define(
+                "qcd_weight", f"""get_qcd_weight_{self.json}(
+                    GenPtHat_hardPtHat, PileupPtHat_puPtHats
+                )"""
+            )
+        else:
+            print(f"\nSetting qcd_weight to 1.0 for data")
+            df = df.Define(
+                "qcd_weight",
+                "1.0"
+            )
 
         return df, ["qcd_weight"]
 
